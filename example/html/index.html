@@ -1,98 +1,173 @@
 <html>
-  <head>
-    <title>h264-live-player web client demo</title>
-    <style>
 
-      #video-box {
-        background-color: black;
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: calc(100% * 9 / 16);
-      }
-      #video-box > canvas{
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .flexbox {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+<head>
+  <title>PiCams</title>
+  <style>
+    #video-box {
+      background-color: black;
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: calc(100% * 9 / 16);
+    }
+
+    #video-box>canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .flexbox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .video-aligner {
+      width: 70%;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+    }
+
+    @media only screen and (prefers-color-scheme: dark) {
       .video-aligner {
-        width: 70%;
+        width: 100%;
       }
 
-      @media only screen and (max-width: 800px) {
-        .video-aligner {
-          width: 100%;
-        }
+      body {
+        background-color: black;
+        color: white;
       }
-    </style>
-  </head>
-  <body>
+    }
 
-    <button type="button" onclick="wsavc.send('custom_event_from_client',{ hello:'world' })">Send event to server</button>
-    
-    <br/>
-    <p id='frame_buffer'></p>
-    <br/>
-    <div class="flexbox">
+    .my_table {
+      padding-top: 20px;
+    }
+
+    .my_table tr {
+      display: flex;
+    }
+
+    .my_table td {
+      margin: 2px;
+      height: 60px;
+      display: flex;
+      flex-grow: 1;
+      /* centering the button */
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .inner_button {
+      display: flex;
+      /* centering the text inside the button */
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      background-color: dimgray;
+      font-size: 50px;
+    }
+
+    #shedcam_options {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <table width="100%" class="my_table">
+    <tr>
+      <td>
+        <button type="button" class="inner_button"
+          onclick="window.location.href='?source=wss://spoluck.ca/wsporchcam'">Porch</button>
+      </td>
+      <td>
+        <button type="button" class="inner_button"
+          onclick="window.location.href='?source=wss://spoluck.ca/wsparkingcam'">Parking</button>
+      </td>
+      <td>
+        <button type="button" class="inner_button"
+          onclick="window.location.href='?source=wss://spoluck.ca/wsbackyardcam'">Backyard</button>
+      </td>
+      <td>
+        <button type="button" class="inner_button"
+          onclick="window.location.href='?source=wss://spoluck.ca/wsshedcam'">Shed</button>
+      </td>
+    </tr>
+  </table>
+
+  <br />
+  <p style="display: none;" id='frame_buffer'></p>
+  <br />
+  <div class="flexbox">
     <div class="video-aligner">
       <div id="video-box">
-        <canvas id='cam' >
+        <canvas id='cam'>
       </div>
     </div>
   </div>
-    
+ 
+  <iframe id="shedcam_options" src="https://spoluck.ca/picam/shed/" width="100%" height="700px"></iframe> 
 
-  <!-- provide WSAvcPlayer -->
-  <!-- <script type="text/javascript" src="Decoder.js"></script>
-  <script type="text/javascript" src="YUVCanvas.js"></script>
-  <script type="text/javascript" src="Player.js"></script> -->
-    <!-- <script type="text/javascript" src="Decoder.js">;</script> -->
-    <script type="text/javascript" src="WSAvcPlayer.js">;</script>
-    
-    <script type="text/javascript">
-      var canvas = document.getElementById('cam')
-      var fb = document.getElementById('frame_buffer')
-      // Create h264 player
-      var wsavc = new WSAvcPlayer.default({useWorker:true});
-      document.getElementById('video-box').appendChild(wsavc.AvcPlayer.canvas)
-      //expose instance for button callbacks
-      window.wsavc = wsavc;
-      
-      //maybe get rid of the ws inside the player?
-      //var uri = "ws://meganeko:3000/videoStream"// + document.location.host;
-      var uri = "ws://" + document.location.host;
-      //var uri = "ws://localhost:3333/"
-      wsavc.connect(uri);
+  <script type="text/javascript" src="WSAvcPlayer.js">;</script>
 
-      //wsavc.on('message', m=>console.log(m))
-      
-      wsavc.on('disconnected',()=>console.log('WS Disconnected'))
-      wsavc.on('connected',()=>console.log('WS connected'))
-      wsavc.on('frame_shift',(fbl)=>{
-       fb.innerText = 'fl: '+fbl
-      })
-      
+  <script type="text/javascript">
 
-      wsavc.on('resized',(payload)=>{
-        console.log('resized', payload)
-        const vb = document.getElementById('video-box')
+    function findGetParameter(parameterName) {
+      var result = null,
+        tmp = [];
+      var items = location.search.substr(1).split("&");
+      for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      }
+      return result;
+    }
 
-        vb.style = `padding-bottom: calc( 100% * ${payload.height} / ${ payload.width })`
-      })
+    var canvas = document.getElementById('cam')
+    var fb = document.getElementById('frame_buffer')
+    // Create h264 player
+    var wsavc = new WSAvcPlayer.default({ useWorker: true });
+    document.getElementById('video-box').appendChild(wsavc.AvcPlayer.canvas)
+    //expose instance for button callbacks
+    window.wsavc = wsavc;
 
-      wsavc.on('stream_active',active=>console.log('Stream is ',active?'active':'offline'))
+    var uri = findGetParameter("source");
+    if (uri.includes("wsshedcam"))
+    {
+      document.getElementById('shedcam_options').style.display = "inline";
+    }
+
+    wsavc.connect(uri);
+
+    wsavc.on('disconnected', () => console.log('WS Disconnected'))
+    wsavc.on('connected', () => console.log('WS connected'))
+    wsavc.on('frame_shift', (fbl) => {
+      fb.innerText = 'fl: ' + fbl
+    })
+
+    wsavc.on('resized', (payload) => {
+      console.log('resized', payload)
+      const vb = document.getElementById('video-box')
+
+      vb.style = `padding-bottom: calc( 100% * ${payload.height} / ${payload.width})`
+    })
+
+    wsavc.on('stream_active', active => console.log('Stream is ', active ? 'active' : 'offline'))
 
 
-      wsavc.on('custom_event_from_server',event=>console.log('got event from server', event))
+    wsavc.on('custom_event_from_server', event => console.log('got event from server', event))
 
-    </script>
-    
-  </body>
+  </script>
+
+
+</body>
+
 </html>

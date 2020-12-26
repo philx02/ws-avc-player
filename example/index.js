@@ -15,14 +15,26 @@ const height = 720
 const express = require('express')
 const app = express()
 // serve the html/index.html
-app.use(express.static(path.resolve(__dirname, 'html')))
+app.use(express.static(path.resolve(__dirname, 'html/cams')))
 // serve the player
 app.use(express.static(path.resolve(__dirname, '../lib')))
 
 const server = http.createServer(app)
 
+
+
+
+
+
+
+
+
+
+
+
+
 // init web socket
-const wss = new WebSocketServer({ /* port: 3333 */ server })
+const wss = new WebSocketServer({ port: 3333 })
 // init the avc server.
 const avcServer = new AvcServer(wss, width, height)
 
@@ -33,54 +45,120 @@ avcServer.client_events.on('custom_event_from_client', e => {
     avcServer.broadcast('custom_event_from_server', { hello: 'from server' })
 })
 
-// RPI example
-if (useRaspivid) {
-    let streamer = null
-
-    const startStreamer = () => {
-        console.log('starting raspivid')
-        streamer = spawn('raspivid', [ '-pf', 'baseline', '-ih', '-t', '0', '-w', width, '-h', height, '-hf', '-fps', '15', '-g', '30', '-o', '-' ])
-        streamer.on('close', () => {
-            streamer = null
-        })
-        avcServer.setVideoStream(streamer.stdout)
-    }
-
-    // OPTIONAL: start on connect
-    avcServer.on('client_connected', () => {
-        if (!streamer) {
-            startStreamer()
-        }
-    })
-
-
-    // OPTIONAL: stop on disconnect
-    avcServer.on('client_disconnected', () => {
-        console.log('client disconnected')
-        if (avcServer.clients.size < 1) {
-            if (!streamer) {
-                console.log('raspivid not running')
-                return
-            }
-            console.log('stopping raspivid')
-            streamer.kill('SIGTERM')
-        }
-    })
-
-} else {
 // create the tcp sever that accepts a h264 stream and broadcasts it back to the clients
-    this.tcpServer = net.createServer((socket) => {
-    // set video stream
-        socket.on('error', e => {
-            console.log('video downstream error:', e)
-        })
-        avcServer.setVideoStream(socket)
-
+this.tcpServer = net.createServer((socket) => {
+// set video stream
+    socket.on('error', e => {
+        console.log('video downstream error:', e)
     })
-    this.tcpServer.listen(5000, '0.0.0.0')
-}
+    avcServer.setVideoStream(socket)
+
+})
+this.tcpServer.listen(4900, '0.0.0.0')
+
+
+
+
+
+
+
+
+// init web socket
+const wss2 = new WebSocketServer({ port: 3334 })
+// init the avc server.
+const avcServer2 = new AvcServer(wss2, width, height)
+
+// handling custom events from client
+avcServer2.client_events.on('custom_event_from_client', e => {
+    console.log('a client sent', e)
+    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+    avcServer2.broadcast('custom_event_from_server', { hello: 'from server' })
+})
+
+this.tcpServer2 = net.createServer((socket) => {
+// set video stream
+    socket.on('error', e => {
+        console.log('video downstream error:', e)
+    })
+    avcServer2.setVideoStream(socket)
+})
+this.tcpServer2.listen(4901, '0.0.0.0')
+
+
+
+
+
+
+
+
+// init web socket
+const wss3 = new WebSocketServer({ port: 3335 })
+// init the avc server.
+const avcServer3 = new AvcServer(wss3, width, height)
+
+// handling custom events from client
+avcServer3.client_events.on('custom_event_from_client', e => {
+    console.log('a client sent', e)
+    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+    avcServer3.broadcast('custom_event_from_server', { hello: 'from server' })
+})
+
+this.tcpServer3 = net.createServer((socket) => {
+// set video stream
+    socket.on('error', e => {
+        console.log('video downstream error:', e)
+    })
+    avcServer3.setVideoStream(socket)
+})
+this.tcpServer3.listen(4902, '0.0.0.0')
+
+
+
+
+
+
+
+
+// init web socket
+const wss4 = new WebSocketServer({ port: 3336 })
+// init the avc server.
+const avcServer4 = new AvcServer(wss4, width, height)
+
+// handling custom events from client
+avcServer4.client_events.on('custom_event_from_client', e => {
+    console.log('a client sent', e)
+    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+    avcServer4.broadcast('custom_event_from_server', { hello: 'from server' })
+})
+
+this.tcpServer4 = net.createServer((socket) => {
+// set video stream
+    socket.on('error', e => {
+        console.log('video downstream error:', e)
+    })
+    avcServer4.setVideoStream(socket)
+})
+this.tcpServer4.listen(4903, '0.0.0.0')
+
+
+
+
+
+
+
 
 server.listen(8081)
+
+
+
+
+
+
+
+
+
+
+
 
 // if not using raspivid option than use one of this to stream
 // ffmpeg OSX

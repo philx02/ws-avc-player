@@ -112,6 +112,7 @@
         <canvas id='cam'>
       </div>
     </div>
+<<<<<<< HEAD
   </div>
  
   <iframe id="shedcam_options" src="https://spoluck.ca/picam/shed/" width="100%" height="700px"></iframe> 
@@ -171,3 +172,185 @@
 </body>
 
 </html>
+=======
+    </div>
+
+    <br/>
+    <p id='frame_buffer2'></p>
+    <br/>
+    <div class="flexbox">
+    <div class="video-aligner">
+      <div id="video-box2">
+        <canvas id='cam2' >
+      </div>
+    </div>
+    </div>
+
+    <br/>
+    <p id='frame_buffer3'></p>
+    <br/>
+    <div class="flexbox">
+    <div class="video-aligner">
+      <div id="video-box3">
+        <canvas id='cam3' >
+      </div>
+    </div>
+    </div>
+    
+
+  <!-- provide WSAvcPlayer -->
+  <!-- <script type="text/javascript" src="Decoder.js"></script>
+  <script type="text/javascript" src="YUVCanvas.js"></script>
+  <script type="text/javascript" src="Player.js"></script> -->
+    <!-- <script type="text/javascript" src="Decoder.js">;</script> -->
+    <script type="text/javascript" src="WSAvcPlayer.js">;</script>
+    
+    <script type="text/javascript">
+
+
+
+
+      var canvas2 = document.getElementById('cam2')
+      var fb2 = document.getElementById('frame_buffer2')
+      // Create h264 player
+      var wsavc2 = new WSAvcPlayer.default({useWorker:true});
+      document.getElementById('video-box2').appendChild(wsavc2.AvcPlayer.canvas)
+      //expose instance for button callbacks
+      window.wsavc2 = wsavc2;
+      
+      //maybe get rid of the ws inside the player?
+      //var uri = "ws://meganeko:3000/videoStream"// + document.location.host;
+      //var uri2 = "ws://" + document.location.host;
+      var uri2 = "ws://192.168.2.103:3334/"
+      wsavc2.connect(uri2);
+
+      //wsavc.on('message', m=>console.log(m))
+      
+      wsavc2.on('disconnected',()=>console.log('WS Disconnected'))
+      wsavc2.on('connected',()=>console.log('WS connected'))
+      wsavc2.on('frame_shift',(fbl)=>{
+       fb2.innerText = 'fl: '+fbl
+      })
+      
+
+      wsavc2.on('resized',(payload)=>{
+        console.log('resized', payload)
+        const vb = document.getElementById('video-box2')
+
+        vb.style = `padding-bottom: calc( 100% * ${payload.height} / ${ payload.width })`
+      })
+
+      wsavc2.on('stream_active',active=>console.log('Stream is ',active?'active':'offline'))
+
+      wsavc2.on('custom_event_from_server',event=>console.log('got event from server', event))
+
+
+
+
+      var canvas3 = document.getElementById('cam3')
+      var fb3 = document.getElementById('frame_buffer3')
+      // Create h264 player
+      var wsavc3 = new WSAvcPlayer.default({useWorker:true});
+      document.getElementById('video-box3').appendChild(wsavc3.AvcPlayer.canvas)
+      //expose instance for button callbacks
+      window.wsavc3 = wsavc3;
+
+      //maybe get rid of the ws inside the player?
+      //var uri = "ws://meganeko:3000/videoStream"// + document.location.host;
+      //var uri2 = "ws://" + document.location.host;
+      var uri3 = "ws://192.168.2.103:3335/"
+      wsavc3.connect(uri3);
+
+      //wsavc.on('message', m=>console.log(m))
+
+      wsavc3.on('disconnected',()=>console.log('WS Disconnected'))
+      wsavc3.on('connected',()=>console.log('WS connected'))
+      wsavc3.on('frame_shift',(fbl)=>{
+      fb3.innerText = 'fl: '+fbl
+      })
+
+
+      wsavc3.on('resized',(payload)=>{
+        console.log('resized', payload)
+        const vb = document.getElementById('video-box3')
+
+        vb.style = `padding-bottom: calc( 100% * ${payload.height} / ${ payload.width })`
+      })
+
+      wsavc3.on('stream_active',active=>console.log('Stream is ',active?'active':'offline'))
+
+      wsavc3.on('custom_event_from_server',event=>console.log('got event from server', event))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      var canvas = document.getElementById('cam')
+      var fb = document.getElementById('frame_buffer')
+      // Create h264 player
+      var wsavc = new WSAvcPlayer.default({useWorker:true});
+      document.getElementById('video-box').appendChild(wsavc.AvcPlayer.canvas)
+      //expose instance for button callbacks
+      window.wsavc = wsavc;
+      
+      //maybe get rid of the ws inside the player?
+      //var uri = "ws://meganeko:3000/videoStream"// + document.location.host;
+      //var uri = "ws://" + document.location.host;
+      var uri = "ws://192.168.2.103:3333/"
+      wsavc.connect(uri);
+
+      //wsavc.on('message', m=>console.log(m))
+      
+      wsavc.on('disconnected',()=>console.log('WS Disconnected'))
+      wsavc.on('connected',()=>console.log('WS connected'))
+      wsavc.on('frame_shift',(fbl)=>{
+       fb.innerText = 'fl: '+fbl
+      })
+      
+
+      wsavc.on('resized',(payload)=>{
+        console.log('resized', payload)
+        const vb = document.getElementById('video-box')
+
+        vb.style = `padding-bottom: calc( 100% * ${payload.height} / ${ payload.width })`
+      })
+
+      wsavc.on('stream_active',active=>console.log('Stream is ',active?'active':'offline'))
+
+
+      wsavc.on('custom_event_from_server',event=>console.log('got event from server', event))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+    </script>
+    
+  </body>
+</html>
+>>>>>>> 482dd2eb9d7aebbc3d55b8fbd8f7e090dcefd6a6

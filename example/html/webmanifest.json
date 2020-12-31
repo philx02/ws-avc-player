@@ -1,9 +1,9 @@
 {
-  "name": "Shedcam",
-  "short_name": "Shedcam",
+  "name": "PiCams",
+  "short_name": "PiCams",
   "start_url": ".",
   "display": "standalone",
-  "description": "Shedcam Monitor.",
+  "description": "PiCams Monitor.",
   "icons": [{
     "src": "camera.png",
     "sizes": "256x256",

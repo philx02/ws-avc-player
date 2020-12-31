@@ -6,16 +6,21 @@ const http = require('http')
 const { WebSocketServer } = require('@clusterws/cws')
 // require('uWebSockets.js')
 const net = require('net')
-const spawn = require('child_process').spawn
+const cookieParser = require('cookie-parser');
+const auth = require('./auth');
 
-const useRaspivid = process.argv.includes('raspivid')
-const width = 1280
-const height = 720
+const width = 800
+const height = 600
 
 const express = require('express')
 const app = express()
+
+app.use(cookieParser('abcdef-12345'));
+
+app.use(auth)
+
 // serve the html/index.html
-app.use(express.static(path.resolve(__dirname, 'html/cams')))
+app.use(express.static(path.resolve(__dirname, 'html')))
 // serve the player
 app.use(express.static(path.resolve(__dirname, '../lib')))
 
@@ -40,18 +45,18 @@ const avcServer = new AvcServer(wss, width, height)
 
 // handling custom events from client
 avcServer.client_events.on('custom_event_from_client', e => {
-    console.log('a client sent', e)
-    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
-    avcServer.broadcast('custom_event_from_server', { hello: 'from server' })
+  console.log('a client sent', e)
+  // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+  avcServer.broadcast('custom_event_from_server', { hello: 'from server' })
 })
 
 // create the tcp sever that accepts a h264 stream and broadcasts it back to the clients
 this.tcpServer = net.createServer((socket) => {
-// set video stream
-    socket.on('error', e => {
-        console.log('video downstream error:', e)
-    })
-    avcServer.setVideoStream(socket)
+  // set video stream
+  socket.on('error', e => {
+    console.log('video downstream error:', e)
+  })
+  avcServer.setVideoStream(socket)
 
 })
 this.tcpServer.listen(4900, '0.0.0.0')
@@ -70,17 +75,17 @@ const avcServer2 = new AvcServer(wss2, width, height)
 
 // handling custom events from client
 avcServer2.client_events.on('custom_event_from_client', e => {
-    console.log('a client sent', e)
-    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
-    avcServer2.broadcast('custom_event_from_server', { hello: 'from server' })
+  console.log('a client sent', e)
+  // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+  avcServer2.broadcast('custom_event_from_server', { hello: 'from server' })
 })
 
 this.tcpServer2 = net.createServer((socket) => {
-// set video stream
-    socket.on('error', e => {
-        console.log('video downstream error:', e)
-    })
-    avcServer2.setVideoStream(socket)
+  // set video stream
+  socket.on('error', e => {
+    console.log('video downstream error:', e)
+  })
+  avcServer2.setVideoStream(socket)
 })
 this.tcpServer2.listen(4901, '0.0.0.0')
 
@@ -97,17 +102,17 @@ const avcServer3 = new AvcServer(wss3, width, height)
 
 // handling custom events from client
 avcServer3.client_events.on('custom_event_from_client', e => {
-    console.log('a client sent', e)
-    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
-    avcServer3.broadcast('custom_event_from_server', { hello: 'from server' })
+  console.log('a client sent', e)
+  // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+  avcServer3.broadcast('custom_event_from_server', { hello: 'from server' })
 })
 
 this.tcpServer3 = net.createServer((socket) => {
-// set video stream
-    socket.on('error', e => {
-        console.log('video downstream error:', e)
-    })
-    avcServer3.setVideoStream(socket)
+  // set video stream
+  socket.on('error', e => {
+    console.log('video downstream error:', e)
+  })
+  avcServer3.setVideoStream(socket)
 })
 this.tcpServer3.listen(4902, '0.0.0.0')
 
@@ -125,17 +130,17 @@ const avcServer4 = new AvcServer(wss4, width, height)
 
 // handling custom events from client
 avcServer4.client_events.on('custom_event_from_client', e => {
-    console.log('a client sent', e)
-    // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
-    avcServer4.broadcast('custom_event_from_server', { hello: 'from server' })
+  console.log('a client sent', e)
+  // broadcasting custom events to all clients (if you wish to send a event to specific client, handle sockets and new connections yourself)
+  avcServer4.broadcast('custom_event_from_server', { hello: 'from server' })
 })
 
 this.tcpServer4 = net.createServer((socket) => {
-// set video stream
-    socket.on('error', e => {
-        console.log('video downstream error:', e)
-    })
-    avcServer4.setVideoStream(socket)
+  // set video stream
+  socket.on('error', e => {
+    console.log('video downstream error:', e)
+  })
+  avcServer4.setVideoStream(socket)
 })
 this.tcpServer4.listen(4903, '0.0.0.0')
 

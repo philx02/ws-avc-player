@@ -17,7 +17,7 @@ function auth(req, res, next) {
       if (username == "philx02" && password == "orbitxxx1") {
         res.cookie('user', 'philx02', {
           signed: true,
-          expire: 99983090
+          maxAge: 315360000000
         });
         next();
       } else {

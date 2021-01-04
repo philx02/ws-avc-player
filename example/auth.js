@@ -15,9 +15,9 @@ function auth(req, res, next) {
       var password = auth[1];
 
       if (username == "philx02" && password == "orbitxxx1") {
-        res.cookie('user', 'admin', {
+        res.cookie('user', 'philx02', {
           signed: true,
-
+          expire: 99983090
         });
         next();
       } else {
@@ -29,7 +29,7 @@ function auth(req, res, next) {
       }
     }
   } else {
-    if (req.signedCookies.user == 'admin') {
+    if (req.signedCookies.user == 'philx02') {
       next();
     } else {
       var err = new Error("You are not authenticated");
